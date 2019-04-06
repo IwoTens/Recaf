@@ -22,6 +22,75 @@
 			<url>https://jitpack.io</url>
 		</repository>
 	</repositories>
+	<profiles>
+		<profile>
+			<id>java8</id>
+			<activation>
+				<activeByDefault>true</activeByDefault>
+			</activation>
+			<build>
+				<plugins>
+					<plugin>
+						<artifactId>maven-compiler-plugin</artifactId>
+						<version>3.8.0</version>
+						<configuration>
+							<!-- <release>10</release> -->
+							<source>1.8</source>
+							<target>1.8</target>
+						</configuration>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+		<profile>
+			<id>java11</id>
+			<activation>
+				<jdk>[11,]</jdk>
+			</activation>
+			<properties>
+				<javafx.version>12</javafx.version>
+			</properties>
+			<build>
+				<plugins>
+					<plugin>
+						<artifactId>maven-compiler-plugin</artifactId>
+						<version>3.8.0</version>
+						<configuration>
+							<compilerArgs>
+								<arg>--add-modules=jdk.attach</arg>
+							</compilerArgs>
+							<!-- without forking compilation happens in the
+                                same process, so no arguments are applied -->
+							<fork>true</fork>
+							<source>1.8</source>
+							<target>1.11</target>
+							<!-- POM in com.github.Col-E:Simple-Memory-Compiler:jar:1.0 throws error -->
+							<failOnError>false</failOnError>
+						</configuration>
+					</plugin>
+				</plugins>
+			</build>
+			<dependencies>
+				<dependency>
+					<groupId>org.controlsfx</groupId>
+					<artifactId>controlsfx</artifactId>
+					<version>9.0.0</version>
+				</dependency>
+				<!-- https://mvnrepository.com/artifact/org.openjfx/javafx-web -->
+				<dependency>
+					<groupId>org.openjfx</groupId>
+					<artifactId>javafx-web</artifactId>
+					<version>${javafx.version}</version>
+				</dependency>
+				<!-- https://mvnrepository.com/artifact/org.openjfx/javafx-swing -->
+				<dependency>
+					<groupId>org.openjfx</groupId>
+					<artifactId>javafx-swing</artifactId>
+					<version>${javafx.version}</version>
+				</dependency>
+			</dependencies>
+		</profile>
+	</profiles>
 	<!-- Dependencies, some are inferred by dependencies of listed dependencies -->
 	<dependencies>
 	<!-- Functionality -->
@@ -63,7 +132,7 @@
 		<dependency>
 			<groupId>com.github.javaparser</groupId>
 			<artifactId>javaparser-core</artifactId>
-			<version>3.13.2</version>
+			<version>3.13.5</version>
 		</dependency>
 		<!-- https://mvnrepository.com/artifact/org.benf/cfr -->
 		<dependency>
@@ -125,7 +194,6 @@
 			<groupId>org.controlsfx</groupId>
 			<artifactId>controlsfx</artifactId>
 			<version>8.40.14</version>
-			<!-- <version>9.0.0</version> -->
 		</dependency>
 	<!-- From jitpack.io -->
 		<!-- https://jitpack.io/#Col-E/Simple-Memory-Compiler/ -->
@@ -158,17 +226,7 @@
 				</includes>
 			</resource>
 		</resources>
-		<plugins>		
-			<!-- Compiler version -->
-			<plugin>
-				<artifactId>maven-compiler-plugin</artifactId>
-				<version>3.8.0</version>
-				<configuration>
-					<!-- <release>10</release> -->
-					<source>1.8</source>
-					<target>1.8</target>
-				</configuration>
-			</plugin>
+		<plugins>
 			<!-- Maven version enforcement -->
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
@@ -181,7 +239,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-enforcer-plugin</artifactId>
-				<version>1.4.1</version>
+				<version>3.0.0-M2</version>
 				<executions>
 					<execution>
 					<id>enforce-maven</id>
