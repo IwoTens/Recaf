@@ -1,9 +1,9 @@
 package me.coley.recaf.ui.component;
 
+import java.util.Arrays;
 import java.util.Optional;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.io.PrintStream;
+
+import me.coley.memcompiler.JavaXCompiler;
 import org.controlsfx.control.PropertySheet.Item;
 import org.controlsfx.property.editor.PropertyEditor;
 import org.fxmisc.richtext.CodeArea;
@@ -344,14 +344,13 @@ public class DecompileItem implements Item {
 		 * Uses the decompiled code to recompile.
 		 */
 		private void recompile(CodeArea codeText) {
-			OutputStream out = null;
 			try {
 				String srcText = codeText.getText();
 				// TODO: For dependencies in agent-mode the jar/classes
 				// should be fetched from the class-path.
-				Compiler compiler = new Compiler();
+				Compiler compiler = new JavaXCompiler();
 				if (Input.get().input != null) {
-					compiler.getClassPath().add(Input.get().input.getAbsolutePath());
+					compiler.setClassPath(Arrays.asList(Input.get().input.getAbsolutePath()));
 				} else {
 					// TODO: Add instrumented classpath
 				}
@@ -363,21 +362,7 @@ public class DecompileItem implements Item {
 					Logging.error("Single-method recompilation unsupported, please decompile the full class");
 					return;
 				}
-				out = new OutputStream() {
-					private StringBuilder string = new StringBuilder();
-
-					@Override
-					public void write(int b) throws IOException {
-						this.string.append((char) b);
-					}
-
-					// Netbeans IDE automatically overrides this toString()
-					public String toString() {
-						return this.string.toString();
-					}
-				};
-				PrintStream errOut = new PrintStream(out);
-				compiler.setOut(errOut);
+				compiler.setCompileListener(compilerMessage -> Logging.error(compilerMessage.message()));
 				if (!compiler.compile()) {
 					Logging.error("Could not recompile!");
 				}
@@ -386,16 +371,22 @@ public class DecompileItem implements Item {
 				for (String unit : compiler.getUnitNames()) {
 					byte[] code = compiler.getUnitCode(unit);
 					ClassNode newValue = Asm.getNode(code);
+					ClassNode oldValue = Input.get().getClasses().get(cn.name);
 					Input.get().getClasses().put(cn.name, newValue);
-					Logging.info("Recompiled '" + cn.name + "' - size:" + code.length, 1);
+					Logging.info("Recompiled '" + cn.name + "' - old class: " + methodInfo(oldValue) + " - new class: " + methodInfo(newValue), 1);
 				}
 			} catch (Exception e) {
-				if (out == null) {
-					Logging.error(e);
-				} else {
-					Logging.error(out.toString(), true);
-				}
+				Logging.error(e);
 			}
+		}
+
+		private String methodInfo(ClassNode clazz) {
+			int numMethods = clazz.methods.size();
+			int sumInstructions = 0;
+			for (MethodNode method : clazz.methods) {
+				sumInstructions += method.instructions.size();
+			}
+			return numMethods + " methods in " + sumInstructions + " instructions";
 		}
 
 		@Override
