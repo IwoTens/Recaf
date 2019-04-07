@@ -380,10 +380,10 @@ public class DecompileItem implements Item {
 			}
 		}
 
-		private String methodInfo(ClassNode clazz) {
-			int numMethods = clazz.methods.size();
+		private String methodInfo(ClassNode cn) {
+			int numMethods = cn.methods.size();
 			int sumInstructions = 0;
-			for (MethodNode method : clazz.methods) {
+			for (MethodNode method : cn.methods) {
 				sumInstructions += method.instructions.size();
 			}
 			return numMethods + " methods in " + sumInstructions + " instructions";
