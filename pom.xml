@@ -34,7 +34,6 @@
 						<artifactId>maven-compiler-plugin</artifactId>
 						<version>3.8.0</version>
 						<configuration>
-							<!-- <release>10</release> -->
 							<source>1.8</source>
 							<target>1.8</target>
 						</configuration>
@@ -56,14 +55,7 @@
 						<artifactId>maven-compiler-plugin</artifactId>
 						<version>3.8.0</version>
 						<configuration>
-							<compilerArgs>
-								<arg>--add-modules=jdk.attach</arg>
-							</compilerArgs>
-							<!-- without forking compilation happens in the
-                                same process, so no arguments are applied -->
-							<fork>true</fork>
-							<source>1.8</source>
-							<target>1.11</target>
+							<release>11</release>
 							<!-- POM in com.github.Col-E:Simple-Memory-Compiler:jar:1.0 throws error -->
 							<failOnError>false</failOnError>
 						</configuration>
@@ -277,9 +269,6 @@
 							<Agent-Class>me.coley.recaf.bytecode.Agent</Agent-Class>
 							<Can-Redefine-Classes>true</Can-Redefine-Classes>
 							<Can-Retransform-Classes>true</Can-Retransform-Classes>
-							<!-- JDK 9+ compat for RichTextFX -->
-							<Add-Exports>javafx.graphics/com.sun.javafx.geom javafx.graphics/com.sun.javafx.text javafx.graphics/com.sun.javafx.scene.text</Add-Exports>
-							<Add-Opens>javafx.graphics/javafx.scene.text javafx.graphics/com.sun.javafx.text</Add-Opens>
 						</manifestEntries>
 					</archive>
 					<descriptorRefs>
