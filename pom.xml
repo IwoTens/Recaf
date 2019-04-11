@@ -40,6 +40,13 @@
 					</plugin>
 				</plugins>
 			</build>
+			<dependencies>
+				<dependency>
+					<groupId>com.github.olivergondza</groupId>
+					<artifactId>maven-jdk-tools-wrapper</artifactId>
+					<version>0.1</version>
+				</dependency>
+			</dependencies>
 		</profile>
 		<profile>
 			<id>java11</id>
@@ -56,8 +63,6 @@
 						<version>3.8.0</version>
 						<configuration>
 							<release>11</release>
-							<!-- POM in com.github.Col-E:Simple-Memory-Compiler:jar:1.0 throws error -->
-							<failOnError>false</failOnError>
 						</configuration>
 					</plugin>
 				</plugins>
