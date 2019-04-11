@@ -40,13 +40,6 @@
 					</plugin>
 				</plugins>
 			</build>
-			<dependencies>
-				<dependency>
-					<groupId>com.github.olivergondza</groupId>
-					<artifactId>maven-jdk-tools-wrapper</artifactId>
-					<version>0.1</version>
-				</dependency>
-			</dependencies>
 		</profile>
 		<profile>
 			<id>java11</id>
@@ -211,6 +204,11 @@
 			<groupId>com.github.Col-E</groupId>
 			<artifactId>Events</artifactId>
 			<version>1.4.1</version>
+		</dependency>
+		<dependency>
+			<groupId>com.github.olivergondza</groupId>
+			<artifactId>maven-jdk-tools-wrapper</artifactId>
+			<version>0.1</version>
 		</dependency>
 	</dependencies>
 	<build>
