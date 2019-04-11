@@ -1,9 +1,7 @@
 package me.coley.recaf.ui.component;
 
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.Optional;
-
-import me.coley.memcompiler.JavaXCompiler;
 import org.controlsfx.control.PropertySheet.Item;
 import org.controlsfx.property.editor.PropertyEditor;
 import org.fxmisc.richtext.CodeArea;
@@ -35,6 +33,7 @@ import me.coley.recaf.util.*;
 import me.coley.event.Bus;
 import me.coley.event.Listener;
 import me.coley.memcompiler.Compiler;
+import me.coley.memcompiler.JavaXCompiler;
 
 /**
  * Item for decompiling classes / methods.
@@ -350,7 +349,7 @@ public class DecompileItem implements Item {
 				// should be fetched from the class-path.
 				Compiler compiler = new JavaXCompiler();
 				if (Input.get().input != null) {
-					compiler.setClassPath(Arrays.asList(Input.get().input.getAbsolutePath()));
+					compiler.setClassPath(Collections.singletonList(Input.get().input.getAbsolutePath()));
 				} else {
 					// TODO: Add instrumented classpath
 				}
@@ -362,9 +361,10 @@ public class DecompileItem implements Item {
 					Logging.error("Single-method recompilation unsupported, please decompile the full class");
 					return;
 				}
-				compiler.setCompileListener(compilerMessage -> Logging.error(compilerMessage.message()));
+				compiler.setCompileListener(msg -> Logging.error(msg.toString()));
 				if (!compiler.compile()) {
 					Logging.error("Could not recompile!");
+					return;
 				}
 				// Iterate over compiled units. This will include inner classes
 				// and the like.
@@ -373,20 +373,12 @@ public class DecompileItem implements Item {
 					ClassNode newValue = Asm.getNode(code);
 					ClassNode oldValue = Input.get().getClasses().get(cn.name);
 					Input.get().getClasses().put(cn.name, newValue);
-					Logging.info("Recompiled '" + cn.name + "' - old class: " + methodInfo(oldValue) + " - new class: " + methodInfo(newValue), 1);
+					Logging.info("Recompiled '" + cn.name + "' - size:" + code.length, 1);
+					Bus.post(new ClassRecompileEvent(cn, newValue));
 				}
 			} catch (Exception e) {
-				Logging.error(e);
-			}
-		}
-
-		private String methodInfo(ClassNode cn) {
-			int numMethods = cn.methods.size();
-			int sumInstructions = 0;
-			for (MethodNode method : cn.methods) {
-				sumInstructions += method.instructions.size();
-			}
-			return numMethods + " methods in " + sumInstructions + " instructions";
+                Logging.error(e);
+            }
 		}
 
 		@Override
